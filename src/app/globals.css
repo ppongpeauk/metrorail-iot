@@ -1,0 +1,252 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-helvetica);
+  --font-condensed: var(--font-helvetica-condensed);
+  --font-condensed-medium: var(--font-helvetica-condensed-medium);
+}
+
+:root {
+  color-scheme: dark;
+  --black: #000;
+  --dark-gray: #1b1c1c;
+  --light-gray: #363636;
+  --stage: var(--dark-gray);
+  --panel: var(--dark-gray);
+  --header: var(--light-gray);
+  --white: #fff;
+  --muted: #a1a2a1;
+  --red: #e31837;
+  --yellow: #ffd200;
+  --green: #00a94f;
+  --blue: #0076c0;
+  --orange: #f7941e;
+  --silver: #a1a2a1;
+  --emergency: var(--red);
+
+  /* Shared display geometry and component tokens. */
+  --sign-space: min(2.1svw, 1.15svh);
+  --column-head-height: calc(var(--sign-space) * 3);
+  --column-head-font-size: min(4cqw, calc(var(--column-head-height) / 2));
+  --content-inline-start: 19.2cqw;
+  --header-icon-inline-start: 2.7cqw;
+  --header-padding-inline-end: 4.2cqw;
+  --panel-inline-inset: 2cqw;
+  --panel-padding-block: 2cqw;
+  --route-track-inline-start: 6.47cqw;
+  --route-track-width: 2.85cqw;
+  --trailing-column-width: 27.4cqw;
+  --arrival-slot-height: 7.12cqh;
+  --line-progress-expanded-list-height: calc(
+    var(--arrival-slot-height) + var(--arrival-slot-height) + var(--sign-space)
+  );
+  --line-progress-collapsed-list-height: calc(
+    var(--arrival-slot-height) + var(--arrival-slot-height) +
+      var(--arrival-slot-height) + var(--arrival-slot-height) +
+      var(--arrival-slot-height) + var(--arrival-slot-height) +
+      var(--arrival-slot-height) + var(--arrival-slot-height) +
+      var(--sign-space) + var(--sign-space) + var(--sign-space) +
+      var(--sign-space) + var(--sign-space) + var(--sign-space) +
+      var(--sign-space)
+  );
+  --content-after-header-icon: calc(
+    var(--content-inline-start) - var(--header-icon-inline-start)
+  );
+  --content-after-panel-inset: calc(
+    var(--content-inline-start) - var(--panel-inline-inset)
+  );
+  --radius-panel: 4px;
+  --radius-dialog: 8px;
+  --radius-control: 2px;
+  --settings-padding-inline: 26px;
+  --settings-padding-block: 24px;
+
+  /* Settings dialog transitions are also read by the close timer. */
+  --modal-open-dur: 250ms;
+  --modal-close-dur: 150ms;
+  --modal-scale: 0.96;
+  --modal-scale-close: 0.96;
+  --modal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Line-progress accordion. */
+  --resize-dur: 2000ms;
+  --resize-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: var(--stage);
+}
+
+.display-stage {
+  background-color: var(--stage);
+  background-image:
+    linear-gradient(rgb(255 255 255 / 3.5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 3.5%) 1px, transparent 1px),
+    linear-gradient(rgb(0 0 0 / 10%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 0 0 / 10%) 1px, transparent 1px);
+  background-position: center;
+  background-size:
+    32px 32px,
+    32px 32px,
+    160px 160px,
+    160px 160px;
+}
+
+.t-resize {
+  transition:
+    width var(--resize-dur) var(--resize-ease),
+    height var(--resize-dur) var(--resize-ease);
+  will-change: width, height;
+}
+
+/* body,
+button,
+input,
+select,
+textarea {
+  font-family:
+    var(--font-metro-helvetica), Helvetica, "Helvetica Neue", Arial, sans-serif;
+} */
+
+.overflow-marquee-track {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  will-change: transform;
+}
+
+.overflow-marquee-track[data-axis="horizontal"] {
+  width: max-content;
+  align-items: center;
+  gap: var(--overflow-marquee-gap);
+}
+
+.overflow-marquee-track[data-axis="vertical"] {
+  width: 100%;
+  flex-direction: column;
+  gap: var(--overflow-marquee-gap);
+}
+
+.overflow-marquee-track[data-active="true"][data-axis="horizontal"][data-repeat="true"] {
+  animation:
+    overflow-marquee-x-enter var(--overflow-marquee-entry-duration) linear,
+    overflow-marquee-x var(--overflow-marquee-duration) linear
+      var(--overflow-marquee-entry-duration) infinite;
+}
+
+.overflow-marquee-track[data-active="true"][data-axis="horizontal"][data-repeat="false"] {
+  animation: overflow-marquee-x-once var(--overflow-marquee-duration) linear;
+}
+
+.overflow-marquee-track[data-active="true"][data-axis="vertical"] {
+  animation: overflow-marquee-y var(--overflow-marquee-duration) linear infinite;
+}
+
+.overflow-marquee-track[data-active="true"][data-repeat="false"] {
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+}
+
+.overflow-marquee-track[data-active="true"][data-axis="vertical"][data-repeat="false"] {
+  animation-name: overflow-marquee-y-once;
+}
+
+.overflow-marquee-content {
+  flex: none;
+}
+
+.overflow-marquee-track[data-axis="vertical"] > .overflow-marquee-content {
+  width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+@keyframes now-blink {
+  0%,
+  25% {
+    background: #fff;
+    color: #181818;
+  }
+
+  50%,
+  75% {
+    background: var(--panel);
+    color: var(--white);
+  }
+
+  100% {
+    background: #fff;
+    color: #181818;
+  }
+}
+
+@keyframes overflow-marquee-x {
+  to {
+    transform: translateX(calc(-1 * var(--overflow-marquee-distance)));
+  }
+}
+
+@keyframes overflow-marquee-x-enter {
+  from {
+    transform: translateX(var(--overflow-marquee-start-offset));
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes overflow-marquee-x-once {
+  from {
+    transform: translateX(var(--overflow-marquee-start-offset));
+  }
+
+  to {
+    transform: translateX(calc(-1 * var(--overflow-marquee-distance)));
+  }
+}
+
+@keyframes overflow-marquee-y {
+  to {
+    transform: translateY(calc(-1 * var(--overflow-marquee-distance)));
+  }
+}
+
+@keyframes overflow-marquee-y-once {
+  from {
+    transform: translateY(var(--overflow-marquee-start-offset));
+  }
+
+  to {
+    transform: translateY(calc(-1 * var(--overflow-marquee-distance)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-resize {
+    transition: none !important;
+  }
+
+  .overflow-marquee-track {
+    animation: none !important;
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .overflow-marquee-copy {
+    display: none;
+  }
+}
